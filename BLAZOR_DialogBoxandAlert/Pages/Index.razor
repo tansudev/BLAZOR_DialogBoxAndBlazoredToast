@@ -1,0 +1,85 @@
+﻿@page "/"
+@inject IToastService toasService
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<div class="container">
+    <h3 class="p-3 text-center">Product List</h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>UnitInStock</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in exampleModels)
+            {
+                <tr>
+                    <td>@item.Product</td>
+                    <td>@item.Category</td>
+                    <td>@item.Price</td>
+                    <td>@item.UnitInStock</td>
+                    <td><button type="button" class="btn btn-danger btn-sm" @onclick="()=>OpenDeleteDialog(item)">Delete</button></td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<button class="btn btn-info" @onclick="@(()=> toasService.ShowInfo("Welcome to Tansu's Page"))">Info Toast</button>
+<button class="btn btn-success" @onclick="@(()=> toasService.ShowSuccess("Welcome to Tansu's Page"))">Info Toast</button>
+<button class="btn btn-warning" @onclick="@(()=> toasService.ShowWarning("Welcome to Tansu's Page"))">Info Toast</button>
+<button class="btn btn-danger" @onclick="@(()=> toasService.ShowError("Welcome to Tansu's Page"))">Info Toast</button>
+
+@if (DeleteDialogOpen)
+{
+    <ModelDialog Title="Are you Sure?" Text="Do you want to delete this entry?" OnClose="@OnDeleteDialogClose" DialogType="ModelDialog.ModelDialogType.DeleteCancel"></ModelDialog>
+
+
+}
+
+@code
+{
+    public bool DeleteDialogOpen { get; set; }
+    public ExampleModel deletedModal { get; set; }
+
+    private List<ExampleModel> exampleModels =
+        new List<ExampleModel> {
+            new ExampleModel{ Category = "Food", Product = "Egg",Price=2,UnitInStock=549} ,
+            new ExampleModel{ Category = "Wear", Product = "Dress",Price=25,UnitInStock=65} ,
+            new ExampleModel{ Category = "Beuty", Product = "Parfum",Price=15,UnitInStock=184} ,
+            new ExampleModel{ Category = "HomeDesign", Product = "Chair",Price=79,UnitInStock=53} ,
+            new ExampleModel{ Category = "Electronic", Product = "Phone",Price=561,UnitInStock=19} ,
+            new ExampleModel{ Category = "Healty", Product = "Cream",Price=42,UnitInStock=36}
+
+                    };
+
+
+
+    private void OnDeleteDialogClose(bool accepted)
+    {
+        if (accepted)
+        {
+            exampleModels.Remove(deletedModal);
+            toasService.ShowSuccess("Ürün silidi");
+        }
+
+        DeleteDialogOpen = false;
+        StateHasChanged();
+    }
+    private void OpenDeleteDialog(ExampleModel item)
+    {
+        deletedModal = item;
+        DeleteDialogOpen = true;
+        StateHasChanged();
+    }
+
+}
